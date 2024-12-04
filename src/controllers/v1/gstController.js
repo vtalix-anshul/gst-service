@@ -23,7 +23,8 @@ const createGst = asyncHandler(async (req, res) => {
     } = req.body;
       
     if (!id || !registration_number || !business_name || !registration_date || !taxpayer_type || !business_nature || !address || !entity_type) {
-      return res.status(400).json({ message: 'All fields are required' });
+      res.status(400);
+      throw new Error('All fields are required');
     }
 
     // Checking if the id or registration_number already exists in the gst table
@@ -34,7 +35,8 @@ const createGst = asyncHandler(async (req, res) => {
     });
 
     if (existingGst) {
-      return res.status(409).json({ message: 'GST number already present in your account' });
+      return res.status(409);
+      throw new Error('GST number already present in your account');
     }
 
     // Create a new gst record within the transaction
@@ -64,7 +66,8 @@ const createGst = asyncHandler(async (req, res) => {
     await t.rollback();
     
     console.error(error);
-    return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    res.status(500);
+    throw new Error('Internal Server Error'|| error.message);
   }
 });
 
